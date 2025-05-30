@@ -61,8 +61,9 @@ export function TablaEstudiantes() {
         );
     };
 
-    const handleVerEstudiante = (id: string) => {
-        router.push(`/estudiantes/${id}`);
+    // Modificamos handleVerEstudiante para recibir el objeto estudiante completo
+    const handleVerEstudiante = (estudiante: { _id: string; numMatricula: string }) => {
+        router.push(`/estudiantes/${estudiante.numMatricula}`);
     };
 
     const handleCrear = () => {
@@ -124,7 +125,8 @@ export function TablaEstudiantes() {
                                     </TableCell>
                                     <TableCell
                                         className="font-medium cursor-pointer"
-                                        onClick={() => handleVerEstudiante(estudiante._id)}
+                                        // Pasamos el objeto estudiante completo a handleVerEstudiante
+                                        onClick={() => handleVerEstudiante(estudiante)}
                                     >
                                         {estudiante.numMatricula}
                                     </TableCell>

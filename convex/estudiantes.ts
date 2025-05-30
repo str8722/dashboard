@@ -8,13 +8,33 @@ export const obtenerEstudiantes = query({
   },
 });
 
-// Consulta para obtener un estudiante por ID
+// // Consulta para obtener un estudiante por ID
+// export const obtenerEstudiantePorId = query({
+//   args: { id: v.id("estudiantes") },
+//   handler: async (ctx, args) => {
+//     return await ctx.db.get(args.id);
+//   },
+// });
+
 export const obtenerEstudiantePorId = query({
-  args: { id: v.id("estudiantes") },
-  handler: async (ctx, args) => {
-    return await ctx.db.get(args.id);
-  },
+    args: { numMatricula: v.string() }, // Ahora esperamos 'numMatricula' como argumento
+    handler: async (ctx, args) => {
+        const estudiante = await ctx.db
+            .query("estudiantes")
+            .filter((q) => q.eq(q.field("numMatricula"), args.numMatricula))
+            .first();
+        return estudiante;
+    },
 });
+
+// Consulta para obtener un estudiante por ID
+export const obtenerEstudiantePorConvexId = query({
+    args: { id: v.id("estudiantes") },
+    handler: async (ctx, args) => {
+        return await ctx.db.get(args.id);
+    },
+});
+
 
 // Mutación para crear un nuevo estudiante
 export const crearEstudiante = mutation({

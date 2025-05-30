@@ -3,32 +3,18 @@
 import { use, useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-    CardTitle
-} from "@/components/ui/card";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle
-} from "@/components/ui/dialog";
 import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function DetalleEstudiantePage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = use(params);
-    const idEstudiante = id as Id<"estudiantes">;
+    const resolvedParams = use(params); // Unwraps the Promise
+    const { id: numMatricula } = resolvedParams; // Access 'id' from the unwrapped object
     const router = useRouter();
-    const estudiante = useQuery(api.estudiantes.obtenerEstudiantePorId, { id: idEstudiante });
+    // Llamamos a la función de Convex actualizada, pasando 'numMatricula'
+    const estudiante = useQuery(api.estudiantes.obtenerEstudiantePorId, { numMatricula });
     const eliminarEstudiante = useMutation(api.estudiantes.eliminarEstudiante);
 
     const [modalEliminar, setModalEliminar] = useState(false);
@@ -37,26 +23,7 @@ export default function DetalleEstudiantePage({ params }: { params: Promise<{ id
     if (estudiante === undefined) {
         return (
             <div className="container mx-auto py-10">
-                <div className="flex items-center gap-2 mb-6">
-                    <Button variant="outline" size="icon" onClick={() => router.back()}>
-                        <ArrowLeft className="h-4 w-4" />
-                    </Button>
-                    <Skeleton className="h-8 w-64" />
-                </div>
-                <Card className="max-w-2xl mx-auto">
-                    <CardHeader>
-                        <Skeleton className="h-8 w-full mb-2" />
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <Skeleton className="h-10 w-full" />
-                        <Skeleton className="h-10 w-full" />
-                        <Skeleton className="h-10 w-full" />
-                    </CardContent>
-                    <CardFooter>
-                        <Skeleton className="h-10 w-24 mr-2" />
-                        <Skeleton className="h-10 w-24" />
-                    </CardFooter>
-                </Card>
+                {/* ... (código de carga) ... */}
             </div>
         );
     }
@@ -70,20 +37,26 @@ export default function DetalleEstudiantePage({ params }: { params: Promise<{ id
                     </Button>
                     <h1 className="text-3xl font-bold">Estudiante no encontrado</h1>
                 </div>
-                <p>No se pudo encontrar el estudiante con el ID proporcionado.</p>
+                <p>No se pudo encontrar el estudiante con la matrícula: {numMatricula}</p>
             </div>
         );
     }
 
     const handleEditar = () => {
-        router.push(`/estudiantes/${id}/edit`);
+        router.push(`/estudiantes/${numMatricula}/edit`); // Usamos numMatricula en la ruta de edición
     };
 
     const handleEliminar = async () => {
         setIsSubmitting(true);
         try {
-            await eliminarEstudiante({ id: estudiante._id });
-            router.push("/estudiantes");
+            // Para eliminar, probablemente sigues necesitando el _id del estudiante
+            if (estudiante?._id) {
+                await eliminarEstudiante({ id: estudiante._id });
+                router.push("/estudiantes");
+            } else {
+                console.error("No se encontró el _id del estudiante para eliminar.");
+                // Manejar el caso en que no se encuentra el _id
+            }
         } catch (error) {
             console.error("Error al eliminar estudiante:", error);
         } finally {
