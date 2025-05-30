@@ -1,4 +1,3 @@
-
 // app/page.tsx
 
 /**
@@ -13,6 +12,7 @@ export default function Home() {
     { name: "Materias", href: "/materias" },
     { name: "Salones", href: "/salones" },
     { name: "Horarios", href: "/horarios" },
+    { name: "Calificaciones", href: "/calificaciones" },
   ];
 
   return (
@@ -35,3 +35,4 @@ export default function Home() {
     </main>
   );
 }
+ 
